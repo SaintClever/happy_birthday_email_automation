@@ -42,25 +42,31 @@ for i in bdays:
         letter_to_str = ''.join(random_letter)
         
         letter = letter_to_str.replace('[RECIPIENT]', recipient_name).replace('[SENDER]', sender_name)
-        # print(letter)
+        print(letter)
 
 
         # Send email
-        smtp_server = 'smtp.gmx.com'
+        smtp_server = 'smtp.gmail.com'
+        port_number = 465
         
         if '@gmx.com' in recipient_email:
             smtp_server = 'smtp.gmx.com'
+            port_number = 587
         elif '@gmail.com' in recipient_email:
             smtp_server = 'smtp.gmail.com'
+            port_number = 465
         elif '@hotmail.com' in recipient_email:
             smtp_server = 'smtp.live.com'
+            port_number = 587
         elif '@outlook.com' in recipient_email:
             smtp_server = 'outlook.office365.com'
+            port_number = 25
         elif '@yahoo.com' in recipient_email:
             smtp_server = 'smtp.mail.yahoo.com'
+            port_number = 465
         
         try:
-            with smtplib.SMTP(smtp_server) as connection:
+            with smtplib.SMTP(smtp_server, port=port_number) as connection:
                 connection.starttls()
                 connection.login(user=sender_email, password=sender_password)
                 connection.sendmail(
@@ -69,7 +75,7 @@ for i in bdays:
                     msg=' '.join([
                         f'From: {sender_name}',
                         f'To: {recipient_email}',
-                        f'Subject: Happy Birthday {recipient_name}🥳🎂🎈🎉🎁',
+                        f'Subject: 🥳🎂 Happy Birthday 🎈 {recipient_name}🎉🎁',
                         '',
                         f'{letter}'
                     ])
