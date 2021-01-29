@@ -1,19 +1,12 @@
-##################### Extra Hard Starting Project ######################
-
-# 1. Update the birthdays.csv
-
-# 2. Check if today matches a birthday in the birthdays.csv
-
-# 3. If step 2 is true, pick a random letter from letter templates and replace the [NAME] with the person's actual name from birthdays.csv
-
-# 4. Send the letter generated in step 3 to that person's email address.
-
-
-
 import datetime as dt
 import pandas as pd
-import glob, random
+import glob, random, smtplib
 
+
+sender = input('Sender name, email, and email password [ex: John john@gmail.com 1234login]: ').split()
+sender_name = sender[0]
+sender_email = sender[1]
+sender_password = sender[2]
 
 
 # birthday df CSV
@@ -35,16 +28,51 @@ for letter in glob.glob('letter_templates/*.txt'):
 # datetime
 now = dt.datetime.now()
 for i in bdays:
-    name = i[0]
-    email = i[1]
+    recipient_name = i[0]
+    recipient_email = i[1]
     year = i[2]
-    months = i[3]
+    month = i[3]
     day = i[4]
     
-    bday = dt.datetime(year=now.year, month=months, day=day)
+    bday = dt.datetime(year=now.year, month=month, day=day)
 
     if now.month == bday.month and now.day == bday.day:
-        # print(f'Happy birthday {name}!')
-        print(random.choice(letters))
+        # print(f'Happy birthday {ecipient}!')
+        random_letter = random.choice(letters)
+        letter_to_str = ''.join(random_letter)
+        
+        letter = letter_to_str.replace('[RECIPIENT]', recipient_name).replace('[SENDER]', sender_name)
+        # print(letter)
 
 
+        # Send email
+        smtp_server = 'smtp.gmx.com'
+        
+        if '@gmx.com' in recipient_email:
+            smtp_server = 'smtp.gmx.com'
+        elif '@gmail.com' in recipient_email:
+            smtp_server = 'smtp.gmail.com'
+        elif '@hotmail.com' in recipient_email:
+            smtp_server = 'smtp.live.com'
+        elif '@outlook.com' in recipient_email:
+            smtp_server = 'outlook.office365.com'
+        elif '@yahoo.com' in recipient_email:
+            smtp_server = 'smtp.mail.yahoo.com'
+        
+        try:
+            with smtplib.SMTP(smtp_server) as connection:
+                connection.starttls()
+                connection.login(user=sender_email, password=sender_password)
+                connection.sendmail(
+                    from_addr=sender_email,
+                    to_addr=recipient_email,
+                    msg=' '.join([
+                        f'From: {sender_name}',
+                        f'To: {recipient_email}',
+                        f'Subject: Happy Birthday {recipient_name}🥳🎂🎈🎉🎁',
+                        '',
+                        f'{letter}'
+                    ])
+                )
+        except Exception as error:
+            print(f'Error: {error}')
