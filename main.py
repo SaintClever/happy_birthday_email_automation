@@ -42,19 +42,19 @@ for i in bdays:
         letter_to_str = ''.join(random_letter)
         
         letter = letter_to_str.replace('[RECIPIENT]', recipient_name).replace('[SENDER]', sender_name)
-        print(letter)
+        # print(letter)
 
 
         # Send email
         smtp_server = 'smtp.gmail.com'
-        port_number = 465
+        port_number = 587
         
         if '@gmx.com' in recipient_email:
             smtp_server = 'smtp.gmx.com'
             port_number = 587
         elif '@gmail.com' in recipient_email:
             smtp_server = 'smtp.gmail.com'
-            port_number = 465
+            port_number = 587
         elif '@hotmail.com' in recipient_email:
             smtp_server = 'smtp.live.com'
             port_number = 587
@@ -78,7 +78,7 @@ for i in bdays:
                         f'Subject: 🥳🎂 Happy Birthday 🎈 {recipient_name}🎉🎁',
                         '',
                         f'{letter}'
-                    ])
+                    ]).encode('utf-8').strip() # may not need .encode('utf-8').strip()
                 )
         except Exception as error:
             print(f'Error: {error}')
